@@ -1,8 +1,15 @@
 name: Hourly-Software-Check
+
 on:
   schedule:
-    - cron: '0 * * * *' # Jede Stunde zur Minute 0
-  workflow_dispatch:   # Ermöglicht manuellen Start
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+# Das hier verhindert, dass zwei Jobs gleichzeitig laufen und sich gegenseitig blockieren
+concurrency:
+  group: software-check
+  cancel-in-progress: true
+
 jobs:
   run-script:
     runs-on: windows-latest
@@ -11,14 +18,21 @@ jobs:
     steps:
       - name: Code auschecken
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Holt die gesamte Historie, wichtig für saubere Pulls
+
       - name: Skript ausführen
         shell: pwsh
         run: ./update_check.ps1
+
       - name: Ergebnisse speichern
         run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          git pull --rebase # Holt erst deine manuellen Änderungen ab
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Sicherstellen, dass wir auf dem neuesten Stand sind
+          git pull origin main --rebase
+          
+          # Nur committen, wenn sich die index.html wirklich geändert hat
           git add index.html
-          git commit -m "Dashboard Update [skip ci]" || exit 0
-          git push
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Dashboard Update [skip ci]" && git push origin main)
