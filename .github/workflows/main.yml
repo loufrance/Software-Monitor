@@ -1,0 +1,23 @@
+name: Hourly-Software-Check
+on:
+  schedule:
+    - cron: '0 * * * *' # Jede Stunde zur Minute 0
+  workflow_dispatch:   # Ermöglicht manuellen Start
+jobs:
+  run-script:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+      - name: Skript ausführen
+        shell: pwsh
+        run: ./update_check.ps1
+      - name: Ergebnisse speichern
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add index.html
+          git commit -m "Dashboard Update" || exit 0
+          git push
