@@ -788,32 +788,73 @@ function Export-To-Html {
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Software Monitor</title>
+    <title>Software Dashboard</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 1000px; margin: auto; }
-        .progress-bg { background: #eee; height: 20px; border-radius: 10px; margin: 15px 0; }
-        .progress-fill { background: #27ae60; height: 100%; width: $($Percent)%; border-radius: 10px; transition: width 1s; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; background: #2c3e50; color: white; padding: 12px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { color: #2c3e50; margin-top: 0; }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.9em; color: #666; }
+        
+        /* Status-Farben */
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; text-transform: uppercase; }
+        .status-OK { background-color: #d4edda; color: #155724; }      /* Grün */
+        .status-UPDATE { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; animation: pulse 2s infinite; } /* Rot blinkend */
+        .status-NEU { background-color: #fff3cd; color: #856404; }     /* Gelb */
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #e9ecef; color: #495057; text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
-        .status-UPDATE { color: #e74c3c; font-weight: bold; background: #ffebeb; padding: 4px; border-radius: 4px; }
-        .status-OK { color: #27ae60; font-weight: bold; }
+        tr:hover { background-color: #f1f3f5; }
+        
+        .progress-container { background: #e9ecef; border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { background: #28a745; height: 100%; width: $($Percent)%; transition: width 1s ease-in-out; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🚀 Software Version Dashboard</h1>
-        <p>Letzte Prüfung: <strong>$TimeNow Uhr</strong> (Automatisch alle 60 Min)</p>
-        <div class="progress-bg"><div class="progress-fill"></div></div>
-        <p>Status: $UpToDate von $Total Programmen sind aktuell ($Percent%)</p>
+    <div class="container">
+        <h1>🚀 Software Monitor</h1>
+        <div class="info-bar">
+            <span>Stand: <strong>$TimeNow Uhr</strong></span>
+            <span>$UpToDate von $Total Programmen aktuell</span>
+        </div>
+        
+        <div class="progress-container"><div class="progress-bar"></div></div>
+
         <table>
-            <tr><th>Programm</th><th>IST</th><th>AKTUELL</th><th>Status</th></tr>
+            <thead>
+                <tr>
+                    <th>Programm</th>
+                    <th>IST (Installiert)</th>
+                    <th>AKTUELL (Quelle)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
 "@
+
+    # Jedes Programm wird hier in die Tabelle geschrieben, egal ob OK oder UPDATE
     foreach ($R in $GlobalResults) {
-        $Html += "<tr><td>$($R.Programm)</td><td>$($R.IST)</td><td>$($R.AKTUELL)</td><td><span class='status-$($R.Status)'>$($R.Status)</span></td></tr>"
+        $BadgeClass = "status-" + $R.Status
+        $Html += @"
+                <tr>
+                    <td>$($R.Programm)</td>
+                    <td>$($R.IST)</td>
+                    <td>$($R.AKTUELL)</td>
+                    <td><span class="status-badge $BadgeClass">$($R.Status)</span></td>
+                </tr>
+"@
     }
-    $Html += "</table></div></body></html>"
+
+    $Html += @"
+            </tbody>
+        </table>
+        <p style="margin-top: 30px; font-size: 0.8em; color: #adb5bd; text-align: center;">GitHub Actions Automatisierung</p>
+    </div>
+</body>
+</html>
+"@
     $Html | Out-File -FilePath $HtmlPath -Encoding UTF8
 }
 Export-To-Html
