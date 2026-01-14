@@ -27,7 +27,7 @@ try {
     Write-Host "Chrome Enterprise..." -NoNewline
     $ChromeApiUrl = "https://versionhistory.googleapis.com/v1/chrome/platforms/win/channels/stable/versions"
     $ChromeResponse = Invoke-RestMethod -Uri $ChromeApiUrl -Method Get
-    $ChromeVersion = $ChromeResponse.versions[2].version 
+    $ChromeVersion = $ChromeResponse.versions[0].version 
     Write-To-ProgramList -Name "Google Chrome Enterprise" -Version $ChromeVersion -Bemerkung "Stable Channel (Index 2)"
     Write-Host " [OK: $ChromeVersion]" -ForegroundColor Green
 } catch { Write-Warning " Fehler bei Chrome: $($_.Exception.Message)" }
