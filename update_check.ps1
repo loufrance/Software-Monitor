@@ -814,7 +814,7 @@ function Export-To-Html {
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Software Monitor</h1>
+        <h1>Software Monitor (by LukasF - Jan26</h1>
         <div class="info-bar">
             <span>Stand: <strong>$TimeNow Uhr</strong></span>
             <span>$UpToDate von $Total Programmen aktuell</span>
