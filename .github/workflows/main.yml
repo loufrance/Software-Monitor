@@ -26,20 +26,22 @@ jobs:
         run: ./update_check.ps1
 
       - name: Ergebnisse speichern
+        shell: pwsh
         run: |
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             
-            # 1. Die neue index.html vormerken
+            # 1. Alle Änderungen (vom Skript erzeugte Dateien) vormerken
             git add .
             
-            # 2. Den lokalen Stand sichern (Commit)
-            # || echo "Keine Änderungen" verhindert, dass der Job abbricht, wenn nichts neu ist
-            git commit -m "Dashboard Update [skip ci]" || echo "No changes to commit"
+            # 2. Commit erstellen. 
+            # Das "|| exit 0" sorgt dafür, dass der Job friedlich stoppt, wenn es gar keine Änderungen gab.
+            git commit -m "Dashboard Update [skip ci]" || exit 0
             
-            # 3. Jetzt erst ziehen wir die Updates vom Server (z.B. deine CSV-Änderungen)
-            # Falls es Konflikte in der index.html gibt, gewinnt deine neue Version (-X theirs)
-            git pull --rebase origin main -X theirs
+            # 3. Pull mit Rebase & Autostash
+            # --autostash: Falls doch noch unvorhergesehene Änderungen da sind, werden sie kurz geparkt.
+            # -X theirs: Wenn es einen Konflikt gibt, gewinnt deine soeben erstellte Datei.
+            git pull --rebase --autostash origin main -X theirs
           
             # 4. Alles hochschieben
             git push origin main
