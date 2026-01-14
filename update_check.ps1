@@ -814,7 +814,7 @@ function Export-To-Html {
 </head>
 <body>
     <div class="container">
-        <h1>Software Monitor (by LukasF - Jan26</h1>
+        <h1>Software Monitor (franz@vobs.at - Jan26</h1>
         <div class="info-bar">
             <span>Stand: <strong>$TimeNow Uhr</strong></span>
             <span>$UpToDate von $Total Programmen aktuell</span>
@@ -826,8 +826,8 @@ function Export-To-Html {
             <thead>
                 <tr>
                     <th>Programm</th>
-                    <th>IST (Installiert)</th>
-                    <th>AKTUELL (Quelle)</th>
+                    <th>IST</th>
+                    <th>AKTUELL</th>
                     <th>Status</th>
                 </tr>
             </thead>
