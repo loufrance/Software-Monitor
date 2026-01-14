@@ -27,12 +27,19 @@ jobs:
 
       - name: Ergebnisse speichern
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            
+            # 1. Die neue index.html vormerken
+            git add index.html
+            
+            # 2. Den lokalen Stand sichern (Commit)
+            # || echo "Keine Änderungen" verhindert, dass der Job abbricht, wenn nichts neu ist
+            git commit -m "Dashboard Update [skip ci]" || echo "No changes to commit"
+            
+            # 3. Jetzt erst ziehen wir die Updates vom Server (z.B. deine CSV-Änderungen)
+            # Falls es Konflikte in der index.html gibt, gewinnt deine neue Version (-X theirs)
+            git pull --rebase origin main -X theirs
           
-          # Sicherstellen, dass wir auf dem neuesten Stand sind
-          git pull origin main --rebase
-          
-          # Nur committen, wenn sich die index.html wirklich geändert hat
-          git add index.html
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Dashboard Update [skip ci]" && git push origin main)
+            # 4. Alles hochschieben
+            git push origin main
