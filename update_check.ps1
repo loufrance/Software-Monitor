@@ -868,18 +868,15 @@ async function acceptUpdate(softwareName, newVersion) {
     localStorage.setItem('github_token', token);
 
     const button = event.target;
-    const originalContent = button.parentElement.innerHTML;
     button.disabled = true;
     button.innerText = "...";
 
-    // WICHTIG: Ersetze DEIN_USER und DEIN_REPO durch deine echten Daten! - loufrance/Software-Monitor
     const url = 'https://api.github.com/repos/loufrance/Software-Monitor/dispatches';
     
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                // Wir nutzen hier einfaches Plus statt ${}, damit PowerShell nicht verwirrt wird
                 'Authorization': 'Bearer ' + token, 
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
@@ -896,7 +893,7 @@ async function acceptUpdate(softwareName, newVersion) {
         if (response.ok) {
             button.parentElement.innerHTML = '<span class="status-badge status-OK" style="background-color: #2b5797;">Wird aktualisiert...</span>';
         } else {
-            alert("Fehler: " + response.status + ". Prüfe deinen Token.");
+            alert("Fehler: " + response.status);
             button.disabled = false;
             button.innerText = "Übernehmen";
         }
