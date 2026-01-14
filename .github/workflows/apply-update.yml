@@ -10,37 +10,44 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Update CSV File
-              shell: pwsh
-              run: |
-                $name = "${{ github.event.client_payload.name }}"
-                $version = "${{ github.event.client_payload.version }}"
-                $csvPath = "ProgrammlisteIST.csv"
-                
-                # CSV laden (Achte auf das Semikolon!)
-                $csv = Import-Csv $csvPath -Delimiter ";"
-                
-                $found = $false
-                foreach ($row in $csv) {
-                    # HIER: 'Programm' muss exakt so in der CSV-Kopfzeile stehen
-                    if ($row.Programm -eq $name) { 
-                        $row.Version = $version  # Prüfe, ob die Spalte in der CSV 'Version' heißt!
-                        $found = $true
-                    }
-                }
-                
-                if ($found) {
-                    $csv | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation
-                    
-                    # Änderungen pushen
-                    git config --global user.name "github-actions[bot]"
-                    git config --global user.email "github-actions[bot]@users.noreply.github.com"
-                    git add $csvPath
-                    git commit -m "Update $name to $version via Dashboard"
-                    git push
-                } else {
-                    Write-Error "Programm '$name' wurde in der CSV nicht gefunden!"
-                    exit 1
-                }
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: CSV aktualisieren
+        shell: pwsh
+        run: |
+          $name = "${{ github.event.client_payload.name }}"
+          $version = "${{ github.event.client_payload.version }}"
+          $csvPath = "ProgrammlisteIST.csv"
+          
+          # CSV laden (mit Semikolon als Trenner)
+          $csv = Import-Csv $csvPath -Delimiter ";"
+          
+          $found = $false
+          foreach ($row in $csv) {
+              if ($row.Programm -eq $name) { 
+                  $row.IST = $version
+                  $found = $true
+              }
+          }
+          
+          if ($found) {
+              # Ohne TypeInformation speichern
+              $csv | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation
+              
+              # Änderungen in GitHub speichern
+              git config --global user.name "github-actions[bot]"
+              git config --global user.email "github-actions[bot]@users.noreply.github.com"
+              git add $csvPath
+              git commit -m "Update $name auf $version via Dashboard"
+              git push
+          } else {
+              Write-Error "Programm '$name' nicht in CSV gefunden!"
+              exit 1
+          }
+
+      - name: Dashboard neu generieren
+        run: |
+          gh workflow run Hourly-Software-Check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
