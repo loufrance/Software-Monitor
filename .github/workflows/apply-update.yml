@@ -13,24 +13,34 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Update CSV File
-        shell: pwsh
-        run: |
-          $name = "${{ github.event.client_payload.name }}"
-          $version = "${{ github.event.client_payload.version }}"
-          $csvPath = "ProgrammlisteIST.csv"
-          
-          # CSV laden und Zeile finden/ändern
-          $csv = Import-Csv $csvPath -Delimiter ";"
-          foreach ($row in $csv) {
-              if ($row.Name -eq $name) {
-                  $row.Version = $version
-              }
-          }
-          $csv | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation
-          
-          # Änderungen pushen
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add $csvPath
-          git commit -m "Update $name to $version via Dashboard"
-          git push
+              shell: pwsh
+              run: |
+                $name = "${{ github.event.client_payload.name }}"
+                $version = "${{ github.event.client_payload.version }}"
+                $csvPath = "ProgrammlisteIST.csv"
+                
+                # CSV laden (Achte auf das Semikolon!)
+                $csv = Import-Csv $csvPath -Delimiter ";"
+                
+                $found = $false
+                foreach ($row in $csv) {
+                    # HIER: 'Programm' muss exakt so in der CSV-Kopfzeile stehen
+                    if ($row.Programm -eq $name) { 
+                        $row.Version = $version  # Prüfe, ob die Spalte in der CSV 'Version' heißt!
+                        $found = $true
+                    }
+                }
+                
+                if ($found) {
+                    $csv | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation
+                    
+                    # Änderungen pushen
+                    git config --global user.name "github-actions[bot]"
+                    git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                    git add $csvPath
+                    git commit -m "Update $name to $version via Dashboard"
+                    git push
+                } else {
+                    Write-Error "Programm '$name' wurde in der CSV nicht gefunden!"
+                    exit 1
+                }
