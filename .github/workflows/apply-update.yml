@@ -16,38 +16,48 @@ jobs:
       - name: CSV aktualisieren
         shell: pwsh
         run: |
-          $name = "${{ github.event.client_payload.name }}"
-          $version = "${{ github.event.client_payload.version }}"
+          # 1. Daten aus dem Button-Klick holen und Leerzeichen entfernen
+          $nameFromButton = "${{ github.event.client_payload.name }}".Trim()
+          $versionFromButton = "${{ github.event.client_payload.version }}".Trim()
+          
+          Write-Host "Suche in CSV nach: '$nameFromButton' mit neuer Version: '$versionFromButton'"
+          
           $csvPath = "ProgrammlisteIST.csv"
           
-          # CSV laden (mit Semikolon als Trenner)
+          # 2. CSV laden (wir prüfen hier, ob sie überhaupt Zeilen hat)
           $csv = Import-Csv $csvPath -Delimiter ";"
-          
+          Write-Host "CSV geladen. Anzahl Einträge: $($csv.Count)"
+
           $found = $false
           foreach ($row in $csv) {
-              if ($row.Programm -eq $name) { 
-                  $row.IST = $version
+              # Wir trimmen auch den Namen aus der CSV, um unsichtbare Leerzeichen zu ignorieren
+              if ($row.Programm.Trim() -eq $nameFromButton) { 
+                  Write-Host "TREFFER GEFUNDEN! Ändere $($row.Programm) von $($row.IST) auf $versionFromButton"
+                  $row.IST = $versionFromButton
                   $found = $true
               }
           }
           
           if ($found) {
-              # Ohne TypeInformation speichern
-              $csv | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation
+              # 3. Speichern und Hochladen
+              $csv | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation -Encoding UTF8
               
-              # Änderungen in GitHub speichern
               git config --global user.name "github-actions[bot]"
               git config --global user.email "github-actions[bot]@users.noreply.github.com"
               git add $csvPath
-              git commit -m "Update $name auf $version via Dashboard"
-              git push
+              
+              # Prüfen, ob Git wirklich eine Änderung sieht
+              $status = git status --porcelain
+              if ($status) {
+                  git commit -m "Update $nameFromButton auf $versionFromButton"
+                  git push
+                  Write-Host "Änderungen erfolgreich hochgeladen!"
+              } else {
+                  Write-Warning "KEINE ÄNDERUNG: Git sieht keinen Unterschied in der Datei!"
+              }
           } else {
-              Write-Error "Programm '$name' nicht in CSV gefunden!"
+              Write-Error "FEHLER: Das Programm '$nameFromButton' wurde nicht in der CSV gefunden."
+              Write-Host "Verfügbare Programme in der CSV sind:"
+              $csv.Programm | ForEach-Object { Write-Host " - '$_'" }
               exit 1
           }
-
-      - name: Dashboard neu generieren
-        run: |
-          gh workflow run Hourly-Software-Check
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
