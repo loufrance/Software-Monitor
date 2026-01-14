@@ -28,7 +28,7 @@
     <div class="container">
         <h1>Software Monitor (franz@vobs.at - Jan26)</h1>
         <div class="info-bar">
-            <span>Stand: <strong>14.01.2026 12:29 Uhr</strong></span>
+            <span>Stand: <strong>14.01.2026 12:38 Uhr</strong></span>
             <span>24 von 26 Programmen aktuell</span>
         </div>
         
@@ -187,18 +187,16 @@ async function acceptUpdate(softwareName, newVersion) {
     localStorage.setItem('github_token', token);
 
     const button = event.target;
-    const originalContent = button.parentElement.innerHTML;
     button.disabled = true;
     button.innerText = "...";
 
-    // WICHTIG: Ersetze DEIN_USER und DEIN_REPO durch deine echten Daten! - loufrance/Software-Monitor
     const url = 'https://api.github.com/repos/loufrance/Software-Monitor/dispatches';
     
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Authorization': Bearer \,
+                'Authorization': 'Bearer ' + token, 
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             },
@@ -214,7 +212,7 @@ async function acceptUpdate(softwareName, newVersion) {
         if (response.ok) {
             button.parentElement.innerHTML = '<span class="status-badge status-OK" style="background-color: #2b5797;">Wird aktualisiert...</span>';
         } else {
-            alert("Fehler: " + response.status + ". Prüfe deinen Token.");
+            alert("Fehler: " + response.status);
             button.disabled = false;
             button.innerText = "Übernehmen";
         }
