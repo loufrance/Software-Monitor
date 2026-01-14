@@ -31,7 +31,7 @@ jobs:
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             
             # 1. Die neue index.html vormerken
-            git add index.html
+            git add .
             
             # 2. Den lokalen Stand sichern (Commit)
             # || echo "Keine Änderungen" verhindert, dass der Job abbricht, wenn nichts neu ist
