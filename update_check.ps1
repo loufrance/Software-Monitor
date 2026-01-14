@@ -790,72 +790,24 @@ function Export-To-Html {
     <meta charset="UTF-8">
     <title>Software Dashboard</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #121212; /* Sehr dunkles Grau */
-            color: #e0e0e0; /* Hellgrauer Text für bessere Lesbarkeit */
-            margin: 0; 
-            padding: 20px; 
-        }
-        .container { 
-            max-width: 1000px; 
-            margin: auto; 
-            background: #1e1e1e; /* Etwas helleres Grau für den Container */
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 30px rgba(0,0,0,0.5); /* Dunklerer Schatten */
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
         h1 { color: #ffffff; margin-top: 0; }
-        .info-bar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 20px; 
-            font-size: 0.9em; 
-            color: #aaa; /* Dezenteres Grau für Info-Texte */
-        }
-        
-        /* Status-Farben für Dark Mode angepasst */
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; text-transform: uppercase; }
-        
-        .status-OK { background-color: #1b4332; color: #75f0a0; }      /* Dunkelgrüner Hintergrund, helle Schrift */
-        
-        .status-UPDATE { 
-            background-color: #641220; 
-            color: #ffb3c1; 
-            border: 1px solid #801b2d; 
-            animation: pulse 2s infinite; 
-        } 
-        
-        .status-NEU { background-color: #5e503f; color: #ffd60a; }     /* Gold/Braun-Töne */
-
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.9em; color: #aaa; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; text-transform: uppercase; display: inline-block; }
+        .status-OK { background-color: #1b4332; color: #75f0a0; }
+        .status-UPDATE { background-color: #641220; color: #ffb3c1; border: 1px solid #801b2d; animation: pulse 2s infinite; }
+        .status-NEU { background-color: #5e503f; color: #ffd60a; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { 
-            background-color: #2d2d2d; 
-            color: #ffffff; 
-            text-align: left; 
-            padding: 12px; 
-            border-bottom: 2px solid #444; 
-        }
+        th { background-color: #2d2d2d; color: #ffffff; text-align: left; padding: 12px; border-bottom: 2px solid #444; }
         td { padding: 12px; border-bottom: 1px solid #333; }
-        tr:hover { background-color: #2a2a2a; } /* Dezenter Hover-Effekt */
-        
-        .progress-container { 
-            background: #333; 
-            border-radius: 10px; 
-            height: 12px; 
-            margin: 15px 0; 
-            overflow: hidden; 
-        }
-        .progress-bar { 
-            background: #4ade80; /* Ein leuchtenderes Grün für den Dark Mode */
-            height: 100%; 
-            width: $($Percent)%; 
-            transition: width 1s ease-in-out; 
-            box-shadow: 0 0 10px rgba(74, 222, 128, 0.3); /* Leichter Glow-Effekt */
-        }
+        tr:hover { background-color: #2a2a2a; }
+        .btn-accept { background-color: #2b5797; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8em; margin-left: 10px; transition: background 0.3s; }
+        .btn-accept:hover { background-color: #3e78cc; }
+        .btn-accept:disabled { background-color: #444; cursor: not-allowed; opacity: 0.5; }
+        .progress-container { background: #333; border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { background: #4ade80; height: 100%; transition: width 1s; box-shadow: 0 0 10px rgba(74, 222, 128, 0.3); }
     </style>
 </head>
 <body>
@@ -866,7 +818,9 @@ function Export-To-Html {
             <span>$UpToDate von $Total Programmen aktuell</span>
         </div>
         
-        <div class="progress-container"><div class="progress-bar"></div></div>
+        <div class="progress-container">
+            <div class="progress-bar" style="width: $($Percent)%"></div>
+        </div>
 
         <table>
             <thead>
@@ -880,15 +834,23 @@ function Export-To-Html {
             <tbody>
 "@
 
-    # Jedes Programm wird hier in die Tabelle geschrieben, egal ob OK oder UPDATE
+    # Jedes Programm wird hier verarbeitet
     foreach ($R in $GlobalResults) {
         $BadgeClass = "status-" + $R.Status
+        
+        # Logik für die Status-Zelle: Wenn Update verfügbar, Button hinzufügen
+        $StatusZelle = "<span class='status-badge $BadgeClass'>$($R.Status)</span>"
+        if ($R.Status -eq "UPDATE") {
+            # Hier bauen wir den Button ein, der die JS-Funktion mit Name und neuer Version aufruft
+            $StatusZelle += " <button class='btn-accept' onclick='acceptUpdate(`"$($R.Programm)`", `"$($R.AKTUELL)`")'>Übernehmen</button>"
+        }
+
         $Html += @"
                 <tr>
                     <td>$($R.Programm)</td>
                     <td>$($R.IST)</td>
                     <td>$($R.AKTUELL)</td>
-                    <td><span class="status-badge $BadgeClass">$($R.Status)</span></td>
+                    <td>$StatusZelle</td>
                 </tr>
 "@
     }
@@ -898,6 +860,51 @@ function Export-To-Html {
         </table>
         <p style="margin-top: 30px; font-size: 0.8em; color: #adb5bd; text-align: center;">GitHub Actions Automatisierung</p>
     </div>
+
+<script>
+async function acceptUpdate(softwareName, newVersion) {
+    const token = localStorage.getItem('github_token') || prompt("Bitte gib deinen GitHub Personal Access Token ein:");
+    if (!token) return;
+    localStorage.setItem('github_token', token);
+
+    const button = event.target;
+    const originalContent = button.parentElement.innerHTML;
+    button.disabled = true;
+    button.innerText = "...";
+
+    // WICHTIG: Ersetze DEIN_USER und DEIN_REPO durch deine echten Daten! - loufrance/Software-Monitor
+    const url = 'https://api.github.com/repos/loufrance/Software-Monitor/dispatches';
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer \${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                event_type: 'update_software_csv',
+                client_payload: {
+                    name: softwareName,
+                    version: newVersion
+                }
+            })
+        });
+
+        if (response.ok) {
+            button.parentElement.innerHTML = '<span class="status-badge status-OK" style="background-color: #2b5797;">Wird aktualisiert...</span>';
+        } else {
+            alert("Fehler: " + response.status + ". Prüfe deinen Token.");
+            button.disabled = false;
+            button.innerText = "Übernehmen";
+        }
+    } catch (e) {
+        alert("Verbindungsfehler.");
+        button.disabled = false;
+    }
+}
+</script>
 </body>
 </html>
 "@
