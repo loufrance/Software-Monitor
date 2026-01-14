@@ -879,7 +879,8 @@ async function acceptUpdate(softwareName, newVersion) {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer \${token}`,
+                // Wir nutzen hier einfaches Plus statt ${}, damit PowerShell nicht verwirrt wird
+                'Authorization': 'Bearer ' + token, 
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             },
