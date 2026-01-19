@@ -253,31 +253,36 @@ try {
     Write-Warning " Fehler bei Paint.NET: $($_.Exception.Message)" 
 }
 
-# --- 11. SHOTCUT (CHOCOLATEY) ---
+# --- 11. SHOTCUT (RELEASE NOTES Liste) ---
 try {
     Write-Host "Shotcut..." -NoNewline
-    
-    # WICHTIG: Variablen-Reset
+
     $Matches = $null
     $ShotcutVersion = $null
 
-    $ShotcutUrl = "https://community.chocolatey.org/packages/shotcut"
+    $ShotcutUrl = "https://www.shotcut.org/download/releasenotes/"
     $ShotcutResponse = Invoke-WebRequest -Uri $ShotcutUrl -UseBasicParsing -UserAgent "Mozilla/5.0"
-    
-    # Suche nach "Shotcut" gefolgt von der Versionsnummer (z.B. 24.11.17)
-    if ($ShotcutResponse.Content -match 'Shotcut\s+([\d\.]+)') {
-        $ShotcutVersion = $Matches[1]
-        
-        Write-To-ProgramList -Name "Shotcut" -Version $ShotcutVersion -Bemerkung "Quelle: Chocolatey"
-        Write-Host " [OK: $ShotcutVersion]" -ForegroundColor Green
-    } 
-    else {
-        Write-Host " [FEHLER]" -ForegroundColor Red
-        Write-Warning " Shotcut Version konnte bei Chocolatey nicht gefunden werden."
-    }
-} catch { 
+
+    # Offizielle "New Version YY.MM" nehmen (stable) [web:98]
+    if ($ShotcutResponse.Content -match 'Release\s+(\d+\.\d+\.\d+)\b') {
+    $ShotcutVersion = $Matches[1]
+
+    Write-To-ProgramList -Name "Shotcut" -Version $ShotcutVersion -Bemerkung "Quelle: shotcut.org (Release Notes)"
+    Write-Host " [OK: $ShotcutVersion]" -ForegroundColor Green
+	}
+	elseif ($ShotcutResponse.Content -match 'New Version\s+(\d+\.\d+)\b') {
+		$ShotcutVersion = $Matches[1]
+
+		Write-To-ProgramList -Name "Shotcut" -Version $ShotcutVersion -Bemerkung "Quelle: shotcut.org (Release Notes)"
+		Write-Host " [OK: $ShotcutVersion]" -ForegroundColor Green
+	}
+	else {
+		Write-Host " [FEHLER]" -ForegroundColor Red
+		Write-Warning " Shotcut Version konnte in den Release Notes nicht gefunden werden."
+	}
+} catch {
     Write-Host " [FEHLER]" -ForegroundColor Red
-    Write-Warning " Fehler bei Shotcut: $($_.Exception.Message)" 
+    Write-Warning " Fehler bei Shotcut: $($_.Exception.Message)"
 }
 
 
