@@ -14,48 +14,58 @@ jobs:
       - name: Code auschecken
         uses: actions/checkout@v4
 
-      - name: CSV aktualisieren
+      - name: CSV aktualisieren oder hinzufügen
         shell: pwsh
         run: |
           $nameFromButton = "${{ github.event.client_payload.name }}".Trim()
           $versionFromButton = "${{ github.event.client_payload.version }}".Trim()
           $csvPath = "ProgrammlisteIST.csv"
+          $timestamp = (Get-Date).AddHours(1).ToString("dd.MM.yyyy HH:mm")
           
-          # 1. CSV laden (Semikolon-Trenner)
-          $csv = Import-Csv $csvPath -Delimiter ";"
+          # 1. CSV laden
+          if (Test-Path $csvPath) {
+              $csv = @(Import-Csv $csvPath -Delimiter ";")
+          } else {
+              $csv = @()
+          }
           
           $found = $false
           foreach ($row in $csv) {
-              # Vergleich des Programmnamens
               if ($row.Programm.Trim() -eq $nameFromButton) { 
                   Write-Host "TREFFER: Aktualisiere $($row.Programm) auf $versionFromButton"
-                  
-                  # 2. Felder aktualisieren (exakt nach deiner Struktur)
                   $row.Version = $versionFromButton
-                  $row.Abrufdatum = (Get-Date).AddHours(1).ToString("dd.MM.yyyy HH:mm") # Deutsche Zeit approx.
-                  
+                  $row.Abrufdatum = $timestamp
                   $found = $true
               }
           }
           
-          if ($found) {
-              # 3. Speichern mit Anführungszeichen und Semikolon
-              $csv | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation -Encoding UTF8
-              
-              # 4. Änderungen in das Repository pushen
-              git config --global user.name "github-actions[bot]"
-              git config --global user.email "github-actions[bot]@users.noreply.github.com"
-              git add $csvPath
-              
-              # Nur committen, wenn es wirklich eine Änderung gab
-              if (git status --porcelain) {
-                  git commit -m "Update $nameFromButton auf $versionFromButton [skip ci]"
-                  git push
-                  Write-Host "Erfolgreich in CSV gespeichert."
+          # 2. Falls NICHT gefunden -> Neu hinzufügen
+          if (-not $found) {
+              Write-Host "NEU: Erstelle neuen Eintrag für '$nameFromButton'"
+              $newRow = [PSCustomObject]@{
+                  Programm    = $nameFromButton
+                  Version     = $versionFromButton
+                  Abrufdatum  = $timestamp
+                  Plattform   = "Windows"
+                  Bemerkung   = "Neu hinzugefügt via Dashboard"
               }
+              $csv += $newRow
+          }
+          
+          # 3. Speichern (Alphabetisch sortiert nach Programmname)
+          $csv | Sort-Object Programm | Export-Csv $csvPath -Delimiter ";" -NoTypeInformation -Encoding UTF8
+          
+          # 4. Änderungen in das Repository pushen
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add $csvPath
+          
+          if (git status --porcelain) {
+              git commit -m "Software Update/Add: $nameFromButton auf $versionFromButton [skip ci]"
+              git push
+              Write-Host "Erfolgreich gespeichert und gepusht."
           } else {
-              Write-Error "Programm '$nameFromButton' wurde nicht in der CSV gefunden!"
-              exit 1
+              Write-Host "Keine Änderungen erkannt."
           }
 
       - name: Dashboard neu generieren
