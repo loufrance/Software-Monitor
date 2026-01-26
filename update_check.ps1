@@ -842,6 +842,8 @@ function Export-To-Html {
         .btn-accept:disabled { background-color: #444; cursor: not-allowed; opacity: 0.5; }
         .progress-container { background: #333; border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden; }
         .progress-bar { background: #4ade80; height: 100%; transition: width 1s; box-shadow: 0 0 10px rgba(74, 222, 128, 0.3); }
+		.btn-add { background-color: #d4a017; /* Gold/Gelb */ color: black; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8em; margin-left: 10px; font-weight: bold; transition: background 0.3s; }
+		.btn-add:hover { background-color: #ffd60a; }
     </style>
 </head>
 <body>
@@ -868,26 +870,30 @@ function Export-To-Html {
             <tbody>
 "@
 
-    # Jedes Programm wird hier verarbeitet
-    foreach ($R in $GlobalResults) {
-        $BadgeClass = "status-" + $R.Status
-        
-        # Logik für die Status-Zelle: Wenn Update verfügbar, Button hinzufügen
-        $StatusZelle = "<span class='status-badge $BadgeClass'>$($R.Status)</span>"
-        if ($R.Status -eq "UPDATE") {
-            # Hier bauen wir den Button ein, der die JS-Funktion mit Name und neuer Version aufruft
-            $StatusZelle += " <button class='btn-accept' onclick='acceptUpdate(`"$($R.Programm)`", `"$($R.AKTUELL)`")'>Übernehmen</button>"
-        }
+# Jedes Programm wird hier verarbeitet
+foreach ($R in $GlobalResults) {
+    $BadgeClass = "status-" + $R.Status
+    $StatusZelle = "<span class='status-badge $BadgeClass'>$($R.Status)</span>"
 
-        $Html += @"
-                <tr>
-                    <td>$($R.Programm)</td>
-                    <td>$($R.IST)</td>
-                    <td>$($R.AKTUELL)</td>
-                    <td>$StatusZelle</td>
-                </tr>
-"@
+    # Logik für Buttons:
+    if ($R.Status -eq "UPDATE") {
+        # Button für bestehende Programme (Update)
+        $StatusZelle += " <button class='btn-accept' onclick='acceptUpdate(`"$($R.Programm)`", `"$($R.AKTUELL)`")'>Übernehmen</button>"
+    } 
+    elseif ($R.Status -eq "NEU") {
+        # NEUER BUTTON für neue Programme (Hinzufügen)
+        $StatusZelle += " <button class='btn-add' onclick='acceptUpdate(`"$($R.Programm)`", `"$($R.AKTUELL)`")'>Hinzufügen</button>"
     }
+
+    $Html += @"
+            <tr>
+                <td>$($R.Programm)</td>
+                <td>$($R.IST)</td>
+                <td>$($R.AKTUELL)</td>
+                <td>$StatusZelle</td>
+            </tr>
+"@
+}
 
     $Html += @"
             </tbody>
