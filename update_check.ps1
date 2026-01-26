@@ -776,6 +776,35 @@ try {
     Write-Warning " Fehler bei Helbling: $($_.Exception.Message)" 
 }
 
+# --- 27. FFmpeg (GITHUB API - GyanD Builds) ---
+try {
+    Write-Host "FFmpeg..." -NoNewline
+    
+    # WICHTIG: Variablen-Reset
+    $Matches = $null
+    $FfmpegVersion = $null
+
+    # Wir nutzen die GitHub API von GyanD (offizieller Windows-Build-Provider)
+    $FfmpegApiUrl = "https://api.github.com/repos/GyanD/codexffmpeg/releases/latest"
+    $FfmpegResponse = Invoke-RestMethod -Uri $FfmpegApiUrl
+    
+    # Die Tags dort sehen meist so aus: "7.1" oder "2024-12-10-git-..."
+    # Wir suchen nach der ersten Versionsnummer (z.B. 7.1)
+    if ($FfmpegResponse.tag_name -match '(\d+\.\d+(?:\.\d+)?)') {
+        $FfmpegVersion = $Matches[1]
+        
+        Write-To-ProgramList -Name "FFmpeg" -Version $FfmpegVersion -Bemerkung "Quelle: GitHub (GyanD Builds)"
+        Write-Host " [OK: $FfmpegVersion]" -ForegroundColor Green
+    } 
+    else {
+        Write-Host " [FEHLER]" -ForegroundColor Red
+        Write-Warning " FFmpeg Version konnte via GitHub API nicht extrahiert werden."
+    }
+} catch { 
+    Write-Host " [FEHLER]" -ForegroundColor Red
+    Write-Warning " Fehler bei FFmpeg: $($_.Exception.Message)" 
+}
+
 # ============================================================
 # ENDE SOFTWARE_ABFRAGEN -------------------------------------
 # ============================================================
