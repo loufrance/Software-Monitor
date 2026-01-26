@@ -811,6 +811,7 @@ try {
 
 # --- HTML GENERIERUNG (Das Dashboard) ---
 function Export-To-Html {
+    $GlobalResults = $GlobalResults | Sort-Object Programm
     $TimeNow = (Get-Date).AddHours(1).ToString("dd.MM.yyyy HH:mm")
     $Total = $GlobalResults.Count
     $UpToDate = ($GlobalResults | Where-Object { $_.Status -eq "OK" }).Count
