@@ -25,7 +25,7 @@ function Write-To-ProgramList {
 # --- 1. GOOGLE CHROME ENTERPRISE (API) ---
 try {
     Write-Host "Chrome Enterprise..." -NoNewline
-    $ChromeApiUrl = "https://versionhistory.googleapis.com/v1/chrome/platforms/win/channels/stable/versions"
+    $ChromeApiUrl = "https://versionhistory.googleapis.com/v1/chrome/platforms/win/channels/extended/versions"
     $ChromeResponse = Invoke-RestMethod -Uri $ChromeApiUrl -Method Get
     $ChromeVersion = $ChromeResponse.versions[0].version 
     Write-To-ProgramList -Name "Google Chrome Enterprise" -Version $ChromeVersion -Bemerkung "Stable Channel (Index 0)"
