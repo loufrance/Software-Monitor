@@ -805,6 +805,26 @@ try {
     Write-Warning " Fehler bei FFmpeg: $($_.Exception.Message)" 
 }
 
+# --- 28. NOTEPAD++ (GitHub Releases API) ---
+try {
+    Write-Host "Notepad++..." -NoNewline
+
+    # GitHub "latest release" API
+    $NppApiUrl  = "https://api.github.com/repos/notepad-plus-plus/notepad-plus-plus/releases/latest"
+    $NppHeaders = @{ "User-Agent" = "PowerShell" }   # GitHub API mag einen User-Agent
+
+    $NppResponse = Invoke-RestMethod -Uri $NppApiUrl -Method Get -Headers $NppHeaders
+
+    # tag_name ist typischerweise "v8.9" -> "8.9"
+    $NppVersion = ($NppResponse.tag_name -replace '^v','')
+
+    Write-To-ProgramList -Name "Notepad++" -Version $NppVersion -Bemerkung "GitHub Releases latest (tag_name=$($NppResponse.tag_name))"
+    Write-Host " [OK: $NppVersion]" -ForegroundColor Green
+}
+catch {
+    Write-Warning " Fehler bei Notepad++: $($_.Exception.Message)"
+}
+
 # ============================================================
 # ENDE SOFTWARE_ABFRAGEN -------------------------------------
 # ============================================================
