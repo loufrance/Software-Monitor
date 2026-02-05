@@ -378,27 +378,35 @@ try {
 try {
     Write-Host "SMART Notebook..." -NoNewline
     
-    # WICHTIG: Variablen-Reset
+    # Variablen-Reset
     $Matches = $null
     $SmartVersion = $null
 
-    # Deine neu gefundene, funktionierende URL
-    $SmartUrl = "https://techupdates.smarttech.com/article/smart-notebook-25-1"
+    # Offizielle Release Notes mit exakter Versionsnummer
+    $SmartUrl = "https://support.smarttech.com/docs/software/notebook/current/en/about/release-notes.cshtml"
     $SmartResponse = Invoke-WebRequest -Uri $SmartUrl -UseBasicParsing -UserAgent "Mozilla/5.0"
     
-    # Wir nutzen deine Regex-Logik
-    # Sie sucht nach "Notebook" oder "Version" gefolgt von der Nummer (z.B. 25.1)
-    if ($SmartResponse.Content -match 'Notebook\s+(\d+\.\d+)' -or 
-        $SmartResponse.Content -match 'Version\s+(\d+\.\d+)') {
-        
+    # Regex für vollständige Versionsnummer (z.B. 25.1.2254.1)
+    # Sucht nach dem Pattern: Windows | 25.1.2254.1 oder ähnlichen Formaten
+    if ($SmartResponse.Content -match 'Windows[|\s]+(\d+\.\d+\.\d+(?:\.\d+)?)') {
         $SmartVersion = $Matches[1]
-        
-        Write-To-ProgramList -Name "SMART Notebook" -Version $SmartVersion -Bemerkung "Quelle: SMART Tech Updates"
+    }
+    # Fallback: Suche nach "Version" gefolgt von Nummer
+    elseif ($SmartResponse.Content -match 'Version[:\s]+(\d+\.\d+\.\d+(?:\.\d+)?)') {
+        $SmartVersion = $Matches[1]
+    }
+    # Fallback: Allgemeine Suche nach Build-Nummer im Format x.x.xxxx.x
+    elseif ($SmartResponse.Content -match '(\d+\.\d+\.\d{4}(?:\.\d+)?)') {
+        $SmartVersion = $Matches[1]
+    }
+    
+    if ($SmartVersion) {
+        Write-To-ProgramList -Name "SMART Notebook" -Version $SmartVersion -Bemerkung "Quelle: SMART Release Notes"
         Write-Host " [OK: $SmartVersion]" -ForegroundColor Green
     } 
     else {
         Write-Host " [FEHLER]" -ForegroundColor Red
-        Write-Warning " SMART Notebook Version konnte auf der Update-Seite nicht gefunden werden."
+        Write-Warning " SMART Notebook Version konnte auf der Release Notes-Seite nicht gefunden werden."
     }
 } catch { 
     Write-Host " [FEHLER]" -ForegroundColor Red
