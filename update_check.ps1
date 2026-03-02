@@ -44,17 +44,33 @@ try {
 } catch { Write-Warning " Fehler bei Firefox: $($_.Exception.Message)" }
 
 
-# --- 3. ADOBE ACROBAT READER (CHOCOLATEY) ---
+# --- 3. ADOBE ACROBAT READER (WINGET SOURCE) ---
 try {
-    Write-Host "Adobe Reader DC..." -NoNewline
-    $ChocoUrl = "https://community.chocolatey.org/packages/adobereader"
-    $ChocoResponse = Invoke-WebRequest -Uri $ChocoUrl -UseBasicParsing -UserAgent "Mozilla/5.0"
-    if ($ChocoResponse.Content -match 'Adobe Acrobat Reader DC\s+(\d{4}\.\d+\.\d+)') {
-        $AdobeVersion = $Matches[1]
-        Write-To-ProgramList -Name "Adobe Acrobat Reader" -Version $AdobeVersion -Bemerkung "Quelle: Chocolatey"
+    Write-Host "Adobe Reader DC (Winget)..." -NoNewline
+
+    # Wir fragen winget nach der Version der 64-Bit Variante (Standard heute)
+    # --source winget stellt sicher, dass wir nicht im lokalen Speicher suchen
+    $WingetInfo = winget show --id Adobe.Acrobat.Reader.64-bit --source winget --accept-source-agreements | Select-String "Version:"
+    
+    if ($WingetInfo) {
+        # Extrahiert die Versionsnummer (letztes Wort in der Zeile)
+        $AdobeVersion = $WingetInfo.ToString().Split()[-1].Trim()
+
+        Write-To-ProgramList -Name "Adobe Acrobat Reader" -Version $AdobeVersion -Bemerkung "Quelle: Windows Package Manager (Winget)"
         Write-Host " [OK: $AdobeVersion]" -ForegroundColor Green
     }
-} catch { Write-Warning " Fehler bei Adobe Reader: $($_.Exception.Message)" }
+    else {
+        # Fallback auf 32-Bit ID, falls die 64-Bit ID nicht gefunden wird
+        $WingetInfo = winget show --id Adobe.Acrobat.Reader.32-bit --source winget | Select-String "Version:"
+        $AdobeVersion = $WingetInfo.ToString().Split()[-1].Trim()
+        
+        Write-To-ProgramList -Name "Adobe Acrobat Reader" -Version $AdobeVersion -Bemerkung "Quelle: Winget (32-Bit)"
+        Write-Host " [OK: $AdobeVersion]" -ForegroundColor Green
+    }
+
+} catch {
+    Write-Warning " Fehler bei Adobe Reader (Winget): $($_.Exception.Message)"
+}
 
 
 # --- 4. ADOBE AIR (CHOCOLATEY) ---
