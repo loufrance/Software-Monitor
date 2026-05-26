@@ -12,7 +12,7 @@ jobs:
       actions: write
     steps:
       - name: Code auschecken
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: CSV aktualisieren oder hinzufügen
         shell: pwsh
