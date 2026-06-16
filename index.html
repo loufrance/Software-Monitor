@@ -22,18 +22,20 @@
         .btn-accept:disabled { background-color: #444; cursor: not-allowed; opacity: 0.5; }
         .progress-container { background: #333; border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden; }
         .progress-bar { background: #4ade80; height: 100%; transition: width 1s; box-shadow: 0 0 10px rgba(74, 222, 128, 0.3); }
-		.btn-add { background-color: #d4a017; /* Gold/Gelb */ color: black; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8em; margin-left: 10px; font-weight: bold; transition: background 0.3s; }
-		.btn-add:hover { background-color: #ffd60a; }
+        .btn-add { background-color: #d4a017; color: black; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8em; margin-left: 10px; font-weight: bold; transition: background 0.3s; }
+        .btn-add:hover { background-color: #ffd60a; }
+        .intune-cell { white-space: nowrap; }
+        .intune-version { margin-right: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Software Monitor (franz@vobs.at - Jan26)</h1>
         <div class="info-bar">
-            <span>Stand: <strong>16.06.2026 07:40 Uhr</strong></span>
-            <span>25 von 25 Programmen aktuell</span>
+            <span>Stand: <strong>16.06.2026 08:13 Uhr</strong></span>
+            <span>27 von 27 Programmen aktuell</span>
         </div>
-        
+
         <div class="progress-container">
             <div class="progress-bar" style="width: 100%"></div>
         </div>
@@ -44,6 +46,7 @@
                     <th>Programm</th>
                     <th>IST</th>
                     <th>AKTUELL</th>
+                    <th>INTUNE</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -51,126 +54,163 @@
                 <td>7-Zip</td>
                 <td>26.01</td>
                 <td>26.01</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Adobe Acrobat Reader</td>
                 <td>26.001.21662</td>
                 <td>26.001.21662</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Adobe AIR</td>
                 <td>51.3.2.3</td>
                 <td>51.3.2.3</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Affinity Suite</td>
                 <td>3.2.2.4557</td>
                 <td>3.2.2.4557</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Audacity</td>
                 <td>3.7.8</td>
                 <td>3.7.8</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>FFmpeg</td>
                 <td>8.1.1</td>
                 <td>8.1.1</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Foxit PDF Reader</td>
                 <td>2026.1.1.36485</td>
                 <td>2026.1.1.36485</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>GIMP</td>
                 <td>3.2.4</td>
                 <td>3.2.4</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Google Chrome Enterprise</td>
                 <td>149.0.7827.115</td>
                 <td>149.0.7827.115</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Helbling Media App</td>
                 <td>2.1.38</td>
                 <td>2.1.38</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
+                <td><span class='status-badge status-OK'>OK</span></td>
+            </tr>            <tr>
+                <td>Inkscape</td>
+                <td>1.4.4</td>
+                <td>1.4.4</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Java 8</td>
                 <td>8.491</td>
                 <td>8.491</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
+                <td><span class='status-badge status-OK'>OK</span></td>
+            </tr>            <tr>
+                <td>Lego Mindstorms EV3 Classroom</td>
+                <td>1.5.3</td>
+                <td>1.5.3</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Lego SPIKE App</td>
                 <td>3.6.0</td>
                 <td>3.6.0</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>LYNX Whiteboard</td>
                 <td>8.6.5.0</td>
                 <td>8.6.5.0</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Minecraft Education</td>
                 <td>1.21.13302.0</td>
                 <td>1.21.13302.0</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Mozilla Firefox</td>
                 <td>151.0.4</td>
                 <td>151.0.4</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>MuseScore</td>
                 <td>4.7.3</td>
                 <td>4.7.3</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Notepad++</td>
                 <td>8.9.6.4</td>
                 <td>8.9.6.4</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>OpenBoard</td>
                 <td>1.7.7</td>
                 <td>1.7.7</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Paint.NET</td>
                 <td>5.1.12</td>
                 <td>5.1.12</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>PDF24 Creator</td>
                 <td>11.30.1</td>
                 <td>11.30.1</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Shotcut</td>
                 <td>26.4.30</td>
                 <td>26.4.30</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>SMART Notebook</td>
                 <td>26.0.1078.0</td>
                 <td>26.0.1078.0</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Sweet Home 3D</td>
                 <td>7.5.0</td>
                 <td>7.5.0</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>VLC Media Player</td>
                 <td>3.0.23</td>
                 <td>3.0.23</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            <tr>
                 <td>Worksheet Crafter</td>
                 <td>2026.2.4</td>
                 <td>2026.2.4</td>
+                <td class="intune-cell"><span class='intune-version'>---</span><span class='status-badge status-NEU'>NEU</span></td>
                 <td><span class='status-badge status-OK'>OK</span></td>
             </tr>            </tbody>
         </table>
@@ -188,12 +228,12 @@ async function acceptUpdate(softwareName, newVersion) {
     button.innerText = "...";
 
     const url = 'https://api.github.com/repos/loufrance/Software-Monitor/dispatches';
-    
+
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + token, 
+                'Authorization': 'Bearer ' + token,
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             },
